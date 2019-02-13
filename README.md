@@ -1,2 +1,6 @@
-# kyberloan-frontend
-Web frontend for Kyber loan collateral liquidation
+# KyberLoan front end
+
+## Running for development
+```bash
+npm run serve
+```
