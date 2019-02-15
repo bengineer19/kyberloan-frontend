@@ -9,8 +9,6 @@ import { routes } from './routes'
 Vue.use(Router)
 Vue.use(BootstrapVue);
 
-Vue.prototype.$provider = 'http://localhost:8545'
-Vue.prototype.$defaultAccount = 15
 
 const router = new Router({
     routes,
