@@ -3,14 +3,33 @@
         <h1>Info</h1>
         <p v-if="error">{{ error }}</p>
         <b-container>
-          <b-card bg-variant="light" header="Account info" >
-            <b-card-text>
-              <p>Balance: {{ balance }} Eth</p>
-              <p>Address: {{ address }}</p>
-            </b-card-text>
-          </b-card>
+          <b-card-group deck>
+            <b-card 
+              border-variant="primary"
+              header-bg-variant="primary"
+              header-text-variant="white"
+              bg-variant="light" 
+              header="Lender account info">
+              <b-card-text>
+                <p>Eth Balance: {{ lenderBalanceETH }} Eth</p>
+                <p>OMG Balance: {{ lenderBalanceOMG }} OMG</p>
+                <p>Address: {{ lenderAddress }}</p>
+              </b-card-text>
+            </b-card>
+
+            <b-card 
+              border-variant="primary"
+              header-bg-variant="primary"
+              header-text-variant="white"
+              bg-variant="light" 
+              header="Borrower account info">
+              <b-card-text>
+                <p>Balance: {{ borrowerBalance }} Eth</p>
+                <p>Address: {{ borrowerAddress }}</p>
+              </b-card-text>
+            </b-card>
+          </b-card-group>
         </b-container>
-        <!-- <p>Test: {{ result }}</p> -->
     </div>
 </template>
 
@@ -18,35 +37,41 @@
 import Web3 from 'web3'
 import config from "../config"
 
-
 var web3 = new Web3(new Web3.providers.HttpProvider(config.PROVIDER));
 
-// var balance = "Undefined"
-
-var contract = new web3.eth.Contract(config.ABI, config.DEMO_ACCOUNT_ADDRESS);
-console.log(contract)
-// var result = contract.methods.hi.call()
-// console.log(result)
-
-// web3.eth.getBalance(config.DEMO_ACCOUNT_ADDRESS).then(function(result){ balance = result })
+var OMGInstance = new web3.eth.Contract(config.OMG_ABI, config.OMG_ADDRESS);
 
 export default {
   name: 'Info',
   data: function(){
     return {
       error: null,
-      address: config.DEMO_ACCOUNT_ADDRESS,
-      balance: "hmm",
-      // result: result
+      borrowerAddress: config.DEMO_BORROWER_ADDRESS,
+      borrowerBalance: "Fetching balance ...",
+      lenderAddress: config.DEMO_LENDER_ADDRESS,
+      lenderBalanceETH: "Fetching balance ...",
+      lenderBalanceOMG: "Fetching balance ...",
+      contractAddress: config.DEMO_CONTRACT_ADDRESS,
     }
   },
+
   async beforeMount(){
-    web3.eth.getBalance(config.DEMO_ACCOUNT_ADDRESS)
+    web3.eth.getBalance(config.DEMO_BORROWER_ADDRESS)
     .then(b => Web3.utils.fromWei(b, 'ether'))
-    .then(b => this.balance = b)
+    .then(b => this.borrowerBalance = b)
     .catch(err => {
         this.error = err.statusCode;
       });
+
+    web3.eth.getBalance(config.DEMO_LENDER_ADDRESS)
+    .then(b => Web3.utils.fromWei(b, 'ether'))
+    .then(b => this.lenderBalanceETH = b)
+    .catch(err => {
+        this.error = err.statusCode;
+      });
+
+    var OMGBalance = await OMGInstance.methods.balanceOf(config.DEMO_LENDER_ADDRESS).call()
+    this.lenderBalanceOMG = web3.utils.fromWei(OMGBalance)
 
     return;
   }
