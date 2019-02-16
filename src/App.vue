@@ -4,9 +4,9 @@
       <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
       <b-navbar-brand href="/">Kyber loan</b-navbar-brand>
       <b-collapse is-nav id="nav_collapse">
-        <!-- <b-navbar-nav>
-          <b-nav-item href="/about">About</b-nav-item>
-        </b-navbar-nav> -->
+        <b-navbar-nav>
+          <b-nav-item href="/info">Info</b-nav-item>
+        </b-navbar-nav>
       </b-collapse>
     </b-navbar>
     <br>
