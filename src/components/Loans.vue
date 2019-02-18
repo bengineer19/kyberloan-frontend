@@ -3,13 +3,12 @@
     <h1>Loans</h1>
     <p v-if="error">{{ error }}</p>
     <b-container>
-      <div>
-        <b-button v-on:click="onDeploy" variant="primary">Deploy new contract</b-button>
+      <b-button v-on:click="onDeploy" variant="primary">Deploy new contract</b-button>
 
-        <br>
-        <br>
-        <b-button v-on:click="onExecute" variant="primary">Execute contract</b-button>
-      </div>
+      <br>
+      <br>
+      <b-button v-on:click="onExecute" variant="primary">Execute contract</b-button>
+      <br>
     </b-container>
   </div>
 </template>
@@ -20,6 +19,8 @@ import config from "../config"
 
  
 var web3 = new Web3(new Web3.providers.HttpProvider(config.PROVIDER));
+
+var deployedContractAddr = "unknown"
 
 function deployContract(event) {
   console.log("deploying...")
@@ -40,6 +41,7 @@ function deployContract(event) {
   // .on('transactionHash', (transactionHash) => { ... })
   .on('receipt', (receipt) => {
     console.log(receipt.contractAddress)
+    deployedContractAddr = receipt.contractAddress;
   })
   // .on('confirmation', (confirmationNumber, receipt) => { ... })
   .then((newContractInstance) => {
@@ -49,7 +51,8 @@ function deployContract(event) {
 
 function execContract(event) {
   console.log(event)
-  var contract = new web3.eth.Contract(config.CONTRACT_ABI, config.DEMO_CONTRACT_ADDRESS);
+  // var contract = new web3.eth.Contract(config.CONTRACT_ABI, config.DEMO_CONTRACT_ADDRESS);
+  var contract = new web3.eth.Contract(config.CONTRACT_ABI, deployedContractAddr);
   console.log(contract)
 
   var tokenAddr = config.OMG_ADDRESS
@@ -71,6 +74,7 @@ export default {
   name: 'Loans',
   data: function(){
     return {
+      // deployedContractAddr: "unknown"
     }
   },
   methods: {
