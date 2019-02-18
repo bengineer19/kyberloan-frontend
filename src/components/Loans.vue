@@ -4,27 +4,11 @@
     <p v-if="error">{{ error }}</p>
     <b-container>
       <div>
-        <b-form @submit="onSubmit">
-          <!-- <b-form-group
-            id="exampleInputGroup1"
-            label="Email address:"
-            label-for="exampleInput1"
-            description="We'll never share your email with anyone else."
-          >
-            <b-form-input
-              id="exampleInput1"
-              type="email"
-              v-model="form.email"
-              required
-              placeholder="Enter email" />
-          </b-form-group> -->
+        <b-button v-on:click="onDeploy" variant="primary">Deploy new contract</b-button>
 
-          <!-- <b-form-group id="exampleInputGroup3" label="Token:" label-for="exampleInput3">
-            <b-form-select id="exampleInput3" :options="OMG" required v-model="form.food" />
-          </b-form-group> -->
-
-          <b-button type="submit" variant="primary">Execute contract</b-button>
-        </b-form>
+        <br>
+        <br>
+        <b-button v-on:click="onExecute" variant="primary">Execute contract</b-button>
       </div>
     </b-container>
   </div>
@@ -37,7 +21,33 @@ import config from "../config"
  
 var web3 = new Web3(new Web3.providers.HttpProvider(config.PROVIDER));
 
-function testContract(event){
+function deployContract(event) {
+  console.log("deploying...")
+  var contract = new web3.eth.Contract(config.CONTRACT_ABI, config.DEMO_CONTRACT_ADDRESS);
+
+  contract.deploy({
+    data: config.CONTRACT_BYTECODE,
+    arguments: [config.KYBER_NETWORK_PROXY]
+  })
+
+  .send({
+      from: config.DEMO_BORROWER_ADDRESS,
+      gas: 1500000,
+      gasPrice: '30000000000000'
+  // }, (error, transactionHash) => { ... })
+  })
+  // .on('error', (error) => { ... })
+  // .on('transactionHash', (transactionHash) => { ... })
+  .on('receipt', (receipt) => {
+    console.log(receipt.contractAddress)
+  })
+  // .on('confirmation', (confirmationNumber, receipt) => { ... })
+  .then((newContractInstance) => {
+      console.log(newContractInstance.options.address)
+  });
+}
+
+function execContract(event) {
   console.log(event)
   var contract = new web3.eth.Contract(config.CONTRACT_ABI, config.DEMO_CONTRACT_ADDRESS);
   console.log(contract)
@@ -64,8 +74,11 @@ export default {
     }
   },
   methods: {
-    onSubmit(evt) {
-      testContract(evt);
+    onExecute(evt) {
+      execContract(evt);
+    },
+    onDeploy(evt) {
+      deployContract(evt);
     }
   },
 }
