@@ -9,6 +9,15 @@ import { routes } from './routes'
 Vue.use(Router)
 Vue.use(BootstrapVue);
 
+Vue.prototype.$loanList = [];
+Vue.prototype.$emptyLoan = {
+  details: '',
+  collateral: 0,
+  contractAddr: '',
+  hasLenderRegistered: false,
+  defaulted: false,
+  fulfilled: false,
+}
 
 const router = new Router({
     routes,

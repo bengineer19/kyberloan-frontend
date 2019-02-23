@@ -6,6 +6,8 @@
       <b-collapse is-nav id="nav_collapse">
         <b-navbar-nav>
           <b-nav-item href="/info">Info</b-nav-item>
+          <b-nav-item href="/borrow">Borrow</b-nav-item>
+          <b-nav-item href="/lend">Lend</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
