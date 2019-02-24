@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Borrow</h1>
+    <h1>Borrowing</h1>
     <b-container>
 
       <div>
@@ -38,7 +38,7 @@
           <!--  -->
           <b-tab title="My open requests">
             <b-card-group deck>
-              <b-card v-for="(loan, counter) in $loanList" v-bind:title="'Loan ' + (counter + 1)">
+              <b-card v-for="(loan, counter) in loanList" v-bind:title="'Loan ' + (counter + 1)">
                 <b-card-text>
                   <p>Loan detail: {{ loan.details }}</p>
                   <br>
@@ -129,15 +129,21 @@ export default {
       tabIndex: 0
     }
   },
+  computed : {
+    loanList(){
+      return this.$store.getters.LOANLIST
+    }
+  },
   methods: {
     onLoanCreate(evt) {
       evt.preventDefault();
 
       createLoan(this.newLoan)
       // Add to record of loans
-      this.$loanList.push(this.newLoan);
+      this.$store.dispatch('SAVE_LOAN', this.newLoan)
+      // this.$loanList.push(this.newLoan);
       console.log("Current loanList: ");
-      console.log(this.$loanList);
+      console.log(this.$store.getters.LOANLIST);
       this.tabIndex++;
     },
   },
