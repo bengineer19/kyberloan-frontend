@@ -29,6 +29,10 @@
               </b-card-text>
             </b-card>
           </b-card-group>
+
+          <br>
+          <br>
+          <b-button @click="resetState" variant="outline-warning">Reset demo</b-button>
         </b-container>
     </div>
 </template>
@@ -52,6 +56,11 @@ export default {
       lenderBalanceETH: "Fetching balance ...",
       lenderBalanceOMG: "Fetching balance ...",
       contractAddress: config.DEMO_CONTRACT_ADDRESS,
+    }
+  },
+  methods: {
+    resetState(event){
+      this.$store.commit('RESET_STATE');
     }
   },
 

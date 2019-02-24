@@ -9,10 +9,13 @@ const vuexLocalStorage = new VuexPersist({
   storage: window.localStorage, // or window.sessionStorage or localForage
 })
 
+var initialState = {
+  loanList: [],
+}
+
 export const store = new Vuex.Store({
-  state: {
-      loanList: [],
-  },
+  state: initialState,
+
   getters : {
     LOANLIST: state => {
       return state.loanList;
@@ -25,6 +28,9 @@ export const store = new Vuex.Store({
     }
   },
   mutations: {
+    RESET_STATE (state) {
+      Object.assign(state, initialState);
+    },
     SET_LOANLIST: (state, payload) => {
       state.loanList = payload
     },
