@@ -17,7 +17,7 @@
                 label-for="details"
                 description="Give a description of the actual loan exchange"
               >
-                <b-form-input id="details" v-model="details" required placeholder="Enter loan details"/>
+                <b-form-input id="details" v-model="newLoan.details" required placeholder="Enter loan details"/>
               </b-form-group>
 
               <b-form-group
@@ -26,7 +26,7 @@
                 label-for="collateral"
                 description="Enter the amount of collateral put up for the loan"
               >
-                <b-form-input id="collateral" type="number" v-model="collateral" required placeholder="Enter loan collateral (currently ETH only)"/>
+                <b-form-input id="collateral" type="number" v-model="newLoan.collateral" required placeholder="Enter loan collateral (currently ETH only)"/>
               </b-form-group>
 
               <b-button type="submit" variant="primary">Submit</b-button>
@@ -75,7 +75,7 @@ function createLoan(newLoan) {
   .send({
       from: config.DEMO_BORROWER_ADDRESS,
       gas: 1500000,
-      gasPrice: '30000000000000'
+      gasPrice: '3000000000000'
   })
   .then();
 }
