@@ -3,11 +3,24 @@
     <h1>Loans</h1>
     <p v-if="error">{{ error }}</p>
     <b-container>
+      <b-card
+      title="Create loan"
+      style="max-width: 20rem;"
+    >
+      <b-card-text>
+        Create a loan contract, specifying the amount of collateral to put up.
+      </b-card-text>
+      
+      <b-form-group label-cols-sm="3" label="City:" label-align-sm="right" label-for="nestedCity">
+        <b-form-input :id="collateral" :type="number" />
+      </b-form-group>
+      <br>
       <b-button v-on:click="onDeploy" variant="primary">Deploy new contract</b-button>
+    </b-card>
 
       <br>
       <br>
-      <b-button v-on:click="onExecute" variant="primary">Execute contract</b-button>
+      <b-button v-on:click="onExecute" variant="primary">Request new loan</b-button>
       <br>
     </b-container>
   </div>
@@ -20,7 +33,6 @@ import config from "../config"
  
 var web3 = new Web3(new Web3.providers.HttpProvider(config.PROVIDER));
 
-var deployedContractAddr = "unknown"
 
 function deployContract(event) {
   console.log("deploying...")
