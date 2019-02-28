@@ -79,8 +79,8 @@ export default {
         this.error = err.statusCode;
       });
 
-    var OMGBalance = await OMGInstance.methods.balanceOf(config.DEMO_LENDER_ADDRESS).call()
-    this.lenderBalanceOMG = web3.utils.fromWei(OMGBalance)
+    var OMGBalance = await OMGInstance.methods.balanceOf(config.DEMO_LENDER_ADDRESS).call();
+    this.lenderBalanceOMG = web3.utils.fromWei(OMGBalance);
 
     return;
   }
