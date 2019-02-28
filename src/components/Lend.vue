@@ -38,7 +38,7 @@
                   <br>
                   <b-button 
                     variant="outline-primary" 
-                    v-bind:id="counter"
+                    v-bind:id="loan.id"
                     v-on:click="onLoanRegister($event)"
                   >Accept loan</b-button>
                 </b-card-text>
@@ -51,7 +51,7 @@
           <!--  -->
           <!-- TAB 2: Perform actions on existing loans -->
           <!--  -->
-          <b-tab title="My outstanding loans">
+          <b-tab title="My accepted loans">
             <b-card-group deck>
               <b-card v-for="(loan, counter) in registeredLoanList" v-bind:title="'Loan ' + (counter + 1)">
                 <b-card-text>
@@ -80,53 +80,21 @@ import config from "../config"
  
 var web3 = new Web3(new Web3.providers.HttpProvider(config.PROVIDER));
 
-var deployedContractAddr = "unknown"
+function registerForLoan(contractAddr) {
+  var contract = new web3.eth.Contract(config.CONTRACT_ABI, contractAddr);
+  // Log value of contract.lenderRegistered
+  contract.methods.lenderRegistered().call().then((r) => {console.log(r)});
 
-function deployContract(event) {
-  console.log("deploying...")
-  var contract = new web3.eth.Contract(config.CONTRACT_ABI, config.DEMO_CONTRACT_ADDRESS);
-
-  contract.deploy({
-    data: config.CONTRACT_BYTECODE,
-    arguments: [config.KYBER_NETWORK_PROXY]
-  })
-
-  .send({
-      from: config.DEMO_BORROWER_ADDRESS,
-      gas: 1500000,
-      gasPrice: '30000000000000'
-  // }, (error, transactionHash) => { ... })
-  })
-  // .on('error', (error) => { ... })
-  // .on('transactionHash', (transactionHash) => { ... })
-  .on('receipt', (receipt) => {
-    console.log(receipt.contractAddress)
-    deployedContractAddr = receipt.contractAddress;
-  })
-  // .on('confirmation', (confirmationNumber, receipt) => { ... })
-  .then((newContractInstance) => {
-      console.log(newContractInstance.options.address)
-  });
-}
-
-function execContract(event) {
-  console.log(event)
-  // var contract = new web3.eth.Contract(config.CONTRACT_ABI, config.DEMO_CONTRACT_ADDRESS);
-  var contract = new web3.eth.Contract(config.CONTRACT_ABI, deployedContractAddr);
-  console.log(contract)
-
-  var tokenAddr = config.OMG_ADDRESS
-  var destinationAddr = config.DEMO_LENDER_ADDRESS
-
-  contract.methods.execSwap(tokenAddr, destinationAddr).send({
+  contract.methods.registerAsLender().send({
     from: config.DEMO_BORROWER_ADDRESS,
-    value: Web3.utils.toWei('1', 'ether'),
-    gas: 1000000
+    gas: config.COLLATERAL_GAS,
   })
   .then(function(res){
-      console.log(res);
+    console.log(res);
+    // Log value of contract.lenderRegistered
+    contract.methods.lenderRegistered().call().then((r) => {console.log(r)});
   }).catch(function(err) {
-      console.log(err);
+    console.log(err);
   });
 }
 
@@ -151,19 +119,23 @@ export default {
     },
   },
   methods: {
+    getLoanById(loanId) {
+      return this.$store.getters.GET_LOAN_BY_ID(loanId);
+    },
     onLoanRegister(evt) {
       // evt.preventDefault();
 
-      console.log(this.$store.getters.LOANLIST);
-      // this.tabIndex++;
-      // registerForLoan(evt);
       console.log("Registering for loan.");
       var loanId = event.srcElement.id;
       console.log("Loan id: ");
       console.log(loanId);
-      var updatedLoanList = this.unregisteredLoanList;
-      updatedLoanList[loanId].hasLenderRegistered = true;
-      this.$store.commit('REGISTER_LOAN', loanId);
+
+      // NOTE: get loanId as attribute not counter from v-for
+      var loan = this.getLoanById(loanId);
+      console.log(loan);
+
+      registerForLoan(loan.contractAddr);
+      this.$store.commit("REGISTER_LOAN", loanId);
     },
   },
 }
