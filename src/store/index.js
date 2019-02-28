@@ -11,6 +11,7 @@ const vuexLocalStorage = new VuexPersist({
 
 var initialState = {
   loanList: [],
+  currentLoanId: 0
 }
 
 export const store = new Vuex.Store({
@@ -25,6 +26,9 @@ export const store = new Vuex.Store({
     },
     UNREGISTERED_LOANLIST: state => {
       return state.loanList.filter(loan => loan.hasLenderRegistered == false);
+    },
+    GET_LOAN_BY_ID: (state) => (id) => {
+      return state.loanList.find(loan => loan.id == id)
     }
   },
   mutations: {
@@ -34,16 +38,19 @@ export const store = new Vuex.Store({
     SET_LOANLIST: (state, payload) => {
       state.loanList = payload
     },
-    ADD_LOAN: (state, payload) => {
-      state.loanList.push(payload)
+    ADD_LOAN: (state, loan) => {
+      loan.id = state.currentLoanId;
+      state.currentLoanId += 1;
+      state.loanList.push(loan);
     },
     // Set loan as lender registered
-    REGISTER_LOAN: (state, loanIndex) => {
+    REGISTER_LOAN: (state, loanId) => {
+      let loanIndex = state.loanList.findIndex(loan => loan.id == loanId);
       state.loanList[loanIndex].hasLenderRegistered = true;
     }
   },
   actions : {
-    SAVE_LOAN: async (context, payload) => {
+    SAVE_NEW_LOAN: async (context, payload) => {
         // let { data } = await Axios.post('http://yourwebsite.com/api/todo')
         context.commit('ADD_LOAN', payload)
     },

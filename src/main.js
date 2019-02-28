@@ -14,6 +14,7 @@ Vue.use(Vuex);
 
 Vue.prototype.$loanList = [];
 Vue.prototype.$emptyLoan = {
+  id: null,
   details: '',
   collateral: 0,
   contractAddr: '',
