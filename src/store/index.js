@@ -47,6 +47,11 @@ export const store = new Vuex.Store({
     REGISTER_LOAN: (state, loanId) => {
       let loanIndex = state.loanList.findIndex(loan => loan.id == loanId);
       state.loanList[loanIndex].hasLenderRegistered = true;
+    },
+    // Set loan as fulfilled
+    FULFIL_LOAN: (state, loanId) => {
+      let loanIndex = state.loanList.findIndex(loan => loan.id == loanId);
+      state.loanList[loanIndex].fulfilled = true;
     }
   },
   actions : {
