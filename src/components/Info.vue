@@ -69,15 +69,15 @@ export default {
     .then(b => Web3.utils.fromWei(b, 'ether'))
     .then(b => this.borrowerBalance = b)
     .catch(err => {
-        this.error = err.statusCode;
-      });
+      this.error = err.statusCode;
+    });
 
     web3.eth.getBalance(config.DEMO_LENDER_ADDRESS)
     .then(b => Web3.utils.fromWei(b, 'ether'))
     .then(b => this.lenderBalanceETH = b)
     .catch(err => {
-        this.error = err.statusCode;
-      });
+      this.error = err.statusCode;
+    });
 
     var OMGBalance = await OMGInstance.methods.balanceOf(config.DEMO_LENDER_ADDRESS).call();
     this.lenderBalanceOMG = web3.utils.fromWei(OMGBalance);
