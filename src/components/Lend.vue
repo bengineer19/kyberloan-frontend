@@ -7,15 +7,11 @@
       <p>You are about to sieze the loan collateral.</p>
       <p>Which token would you like to liquidate the collateral in?</p>
 
-      <b-dropdown id="ddown" text="Select token" class="m-md-2" variant="outline-primary">
-        <b-dropdown-item>ETH</b-dropdown-item>
-        <b-dropdown-item>OMG</b-dropdown-item>
-        <b-dropdown-item>More tokens</b-dropdown-item>
-      </b-dropdown>
+      <b-form-select v-model="selected" :options="tokenOptions"/>
       <div slot="modal-footer" class="w-100">
         <small class="text-muted float-left">Powered by Kyber</small>
         <!-- <p class="float-left">Powered by Kyber</p> -->
-        <b-button id="ok-btn" class="float-right" variant="primary" @click="show=false">Withdraw</b-button>
+        <b-button id="ok-btn" class="float-right" variant="primary" @click="onLoanSieze($event)">Withdraw</b-button>
       </div>
     </b-modal>
 
@@ -64,7 +60,11 @@
                   >Loan fulfilled</b-button>
                   <br>
                   <br>
-                  <b-button v-b-modal.withdrawModal variant="danger">Loan defaulted</b-button>
+                  <b-button 
+                    v-b-modal.withdrawModal variant="danger"
+                    v-on:click="onSiezeModalLaunch($event)"
+                    v-bind:id="loan.id"
+                  >Loan defaulted</b-button>
                 </b-card-text>
                 <div slot="footer"><p>Loan Collateral: {{ loan.collateral }} ETH</p></div>
               </b-card>
@@ -126,7 +126,14 @@ export default {
   data: function(){
     return {
       newLoan: this.$emptyLoan,
-      tabIndex: 0
+      tabIndex: 0,
+      activeModalLoanId: null,
+      selected: null,
+      tokenOptions: [
+        { value: null, text: 'Please select an option' },
+        { value: '0xlongaddres', text: 'ETH' },
+        { value: 'omgaddr', text: 'OMG' },
+      ]
     }
   },
   computed : {
@@ -165,6 +172,12 @@ export default {
 
       fulfilLoan(loan.contractAddr);
       this.$store.commit("FULFIL_LOAN", loanId);
+    },
+    onSiezeModalLaunch(evt) {
+      this.activeModalLoanId = evt.srcElement.id;
+    },
+    onLoanSieze(evt) {
+      console.log(this.selected);
     }
   },
 }
