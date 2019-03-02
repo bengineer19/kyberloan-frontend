@@ -52,11 +52,15 @@ export const store = new Vuex.Store({
     FULFIL_LOAN: (state, loanId) => {
       let loanIndex = state.loanList.findIndex(loan => loan.id == loanId);
       state.loanList[loanIndex].fulfilled = true;
+    },
+    REMOVE_LOAN: (state, loanId) => {
+      let loanIndex = state.loanList.findIndex(loan => loan.id == loanId);
+      state.loanList.splice(loanIndex, 1);
     }
   },
   actions : {
     SAVE_NEW_LOAN: async (context, payload) => {
-        // let { data } = await Axios.post('http://yourwebsite.com/api/todo')
+        // let { data } = await Axios.post('')
         context.commit('ADD_LOAN', payload)
     },
   },

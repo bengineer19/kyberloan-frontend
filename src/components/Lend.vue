@@ -30,7 +30,7 @@
             <br>
             <b-card-group deck>
               <b-card 
-                v-for="(loan, counter) in unregisteredLoanList" 
+                v-for="(loan, counter) in unregisteredLoanList"
                 v-bind:title="'Loan ' + (counter + 1)"
               >
                 <b-card-text>
@@ -57,7 +57,11 @@
                 <b-card-text>
                   <p>Loan detail: {{ loan.details }}</p>
                   <br>
-                  <b-button variant="success">Loan fulfilled</b-button>
+                  <b-button 
+                    variant="success"
+                    v-bind:id="loan.id"
+                    v-on:click="onLoanFulfil($event)"  
+                  >Loan fulfilled</b-button>
                   <br>
                   <br>
                   <b-button v-b-modal.withdrawModal variant="danger">Loan defaulted</b-button>
@@ -80,13 +84,32 @@ import config from "../config"
  
 var web3 = new Web3(new Web3.providers.HttpProvider(config.PROVIDER));
 
+function fulfilLoan(contractAddr) {
+  var contract = new web3.eth.Contract(config.CONTRACT_ABI, contractAddr);
+
+  contract.methods.borrower().call().then((r) => {console.log(r)});
+  contract.methods.lender().call().then((r) => {console.log(r)});
+  contract.methods.collateral().call().then((r) => {console.log(r)});
+
+  contract.methods.returnCollateral().send({
+    from: config.DEMO_LENDER_ADDRESS,
+    
+    gas: config.COLLATERAL_GAS * 1000,
+  })
+  .then(function(res){
+    console.log(res);
+  }).catch(function(err) {
+    console.log(err);
+  });
+}
+
 function registerForLoan(contractAddr) {
   var contract = new web3.eth.Contract(config.CONTRACT_ABI, contractAddr);
   // Log value of contract.lenderRegistered
   contract.methods.lenderRegistered().call().then((r) => {console.log(r)});
 
   contract.methods.registerAsLender().send({
-    from: config.DEMO_BORROWER_ADDRESS,
+    from: config.DEMO_LENDER_ADDRESS,
     gas: config.COLLATERAL_GAS,
   })
   .then(function(res){
@@ -123,8 +146,6 @@ export default {
       return this.$store.getters.GET_LOAN_BY_ID(loanId);
     },
     onLoanRegister(evt) {
-      // evt.preventDefault();
-
       console.log("Registering for loan.");
       var loanId = event.srcElement.id;
       console.log("Loan id: ");
@@ -137,6 +158,14 @@ export default {
       registerForLoan(loan.contractAddr);
       this.$store.commit("REGISTER_LOAN", loanId);
     },
+    onLoanFulfil(evt) {
+      // NOTE: get loanId as attribute not counter from v-for
+      var loanId = event.srcElement.id;
+      var loan = this.getLoanById(loanId);
+
+      fulfilLoan(loan.contractAddr);
+      this.$store.commit("FULFIL_LOAN", loanId);
+    }
   },
 }
 </script>

@@ -42,7 +42,11 @@
                 <b-card-text>
                   <p>Loan detail: {{ loan.details }}</p>
                   <br>
-                  <b-button variant="outline-primary">Withdraw loan request</b-button>
+                  <b-button 
+                    variant="outline-primary"
+                    v-bind:id="loan.id"
+                    v-on:click="onWithdrawLoan($event)"
+                  >Withdraw loan request</b-button>
                 </b-card-text>
                 <div slot="footer"><p>Loan Collateral: {{ loan.collateral }} ETH</p></div>
               </b-card>
@@ -96,6 +100,20 @@ function payCollateral(ETHAmount, contractAddr) {
   });
 }
 
+function withdrawCollateral(contractAddr) {
+  var contract = new web3.eth.Contract(config.CONTRACT_ABI, contractAddr);
+
+  contract.methods.withdrawCollateral().send({
+    from: config.DEMO_BORROWER_ADDRESS,
+    gas: config.COLLATERAL_GAS * 100,
+  })
+  .then(function(res){
+    console.log(res);
+  }).catch(function(err) {
+    console.log(err);
+  });
+}
+
 
 export default {
   name: 'Loans',
@@ -124,14 +142,35 @@ export default {
       createLoan(this.newLoan)
       .then(inst => {
         let newContractAddr = inst.options.address
+        console.log("Contract addr: ")
+        console.log(newContractAddr);
 
-        payCollateral(this.collateral, newContractAddr);
+        console.log("Paying initial collateral");
+        payCollateral(this.newLoan.collateral, newContractAddr);
         
         // Add to record of loans
         this.newLoan.contractAddr = newContractAddr;
-        this.$store.dispatch('SAVE_LOAN', this.newLoan);
+        this.$store.dispatch('SAVE_NEW_LOAN', this.newLoan);
         this.tabIndex++;
       })
+    },
+    getLoanById(loanId) {
+      return this.$store.getters.GET_LOAN_BY_ID(loanId);
+    },
+    onWithdrawLoan(evt) {
+      console.log("Withdrawing loan...");
+      var loanId = evt.srcElement.id;
+      console.log("Loan id: ");
+      console.log(loanId);
+      
+      // NOTE: get loanId as attribute not counter from v-for
+      var loan = this.getLoanById(loanId);
+      console.log(loan);
+
+      console.log("Loan Address: ");
+      console.log(loan.contractAddr);
+      withdrawCollateral(loan.contractAddr);
+      this.$store.commit("REMOVE_LOAN", loanId);
     },
   },
 }
