@@ -79,7 +79,7 @@ function createLoan(newLoan) {
   .send({
       from: config.DEMO_BORROWER_ADDRESS,
       gas: 1500000,
-      gasPrice: '3000000000000'
+      gasPrice: web3.defaultGasPrice
   })
   .then();
 }
@@ -91,6 +91,7 @@ function payCollateral(ETHAmount, contractAddr) {
     from: config.DEMO_BORROWER_ADDRESS,
     value: Web3.utils.toWei(ETHAmount.toString(), 'ether'),
     gas: config.COLLATERAL_GAS,
+    gasPrice: web3.defaultGasPrice
   })
   .then(function(res){
     console.log(res);
@@ -105,7 +106,8 @@ function withdrawCollateral(contractAddr) {
 
   contract.methods.withdrawCollateral().send({
     from: config.DEMO_BORROWER_ADDRESS,
-    gas: config.COLLATERAL_GAS * 100,
+    gas: config.COLLATERAL_GAS,
+    gasPrice: web3.defaultGasPrice
   })
   .then(function(res){
     console.log(res);
