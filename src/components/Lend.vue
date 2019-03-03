@@ -7,7 +7,9 @@
       <p>You are about to sieze the loan collateral.</p>
       <p>Which token would you like to liquidate the collateral in?</p>
 
-      <b-form-select v-model="selected" :options="tokenOptions"/>
+      <!-- Token options dropdown -->
+      <b-form-select v-model="selectedToken" :options="tokenOptions"/>
+
       <div slot="modal-footer" class="w-100">
         <small class="text-muted float-left">Powered by Kyber</small>
         <!-- <p class="float-left">Powered by Kyber</p> -->
@@ -93,14 +95,34 @@ function fulfilLoan(contractAddr) {
 
   contract.methods.returnCollateral().send({
     from: config.DEMO_LENDER_ADDRESS,
-    
-    gas: config.COLLATERAL_GAS * 1000,
+    gas: config.LOAN_GAS,
+    gasPrice: web3.defaultGasPrice
   })
   .then(function(res){
     console.log(res);
   }).catch(function(err) {
     console.log(err);
   });
+}
+
+// Extract collateral and return it in required token
+function siezeLoan(contractAddr, tokenAddr) {
+  var contract = new web3.eth.Contract(config.CONTRACT_ABI, contractAddr);
+
+  console.log("Address: ");
+  console.log(tokenAddr);
+
+  contract.methods.siezeCollateral(tokenAddr).send({
+    from: config.DEMO_LENDER_ADDRESS,
+    gas: config.LOAN_GAS,
+    gasPrice: web3.defaultGasPrice
+  })
+  .then(function(res){
+    console.log(res);
+  }).catch(function(err) {
+    console.log(err);
+  });
+
 }
 
 function registerForLoan(contractAddr) {
@@ -110,7 +132,8 @@ function registerForLoan(contractAddr) {
 
   contract.methods.registerAsLender().send({
     from: config.DEMO_LENDER_ADDRESS,
-    gas: config.COLLATERAL_GAS,
+    gas: config.LOAN_GAS,
+    gasPrice: web3.defaultGasPrice
   })
   .then(function(res){
     console.log(res);
@@ -128,11 +151,11 @@ export default {
       newLoan: this.$emptyLoan,
       tabIndex: 0,
       activeModalLoanId: null,
-      selected: null,
+      selectedToken: null,
       tokenOptions: [
         { value: null, text: 'Please select an option' },
-        { value: '0xlongaddres', text: 'ETH' },
-        { value: 'omgaddr', text: 'OMG' },
+        { value: config.ETH_ADDRESS, text: 'ETH' },
+        { value: config.OMG_ADDRESS, text: 'OMG' },
       ]
     }
   },
@@ -172,12 +195,15 @@ export default {
 
       fulfilLoan(loan.contractAddr);
       this.$store.commit("FULFIL_LOAN", loanId);
+      this.$store.commit("REMOVE_LOAN", loanId);
     },
     onSiezeModalLaunch(evt) {
       this.activeModalLoanId = evt.srcElement.id;
     },
     onLoanSieze(evt) {
-      console.log(this.selected);
+      console.log(this.selectedToken);
+      var contractAddr = this.getLoanById(this.activeModalLoanId).contractAddr;
+      siezeLoan(contractAddr, this.selectedToken);
     }
   },
 }
