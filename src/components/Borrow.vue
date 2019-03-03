@@ -71,14 +71,15 @@ var web3 = new Web3(new Web3.providers.HttpProvider(config.PROVIDER));
 function createLoan(newLoan) {
   console.log("Creating new contract...")
   var contract = new web3.eth.Contract(config.CONTRACT_ABI, config.DEMO_CONTRACT_ADDRESS);
+  var collateral = Web3.utils.toWei(newLoan.collateral);
 
   return contract.deploy({
     data: config.CONTRACT_BYTECODE,
-    arguments: [config.KYBER_NETWORK_PROXY, newLoan.collateral]
+    arguments: [config.KYBER_NETWORK_PROXY, collateral]
   })
   .send({
       from: config.DEMO_BORROWER_ADDRESS,
-      gas: 1500000,
+      gas: config.LOAN_GAS,
       gasPrice: web3.defaultGasPrice
   })
   .then();
