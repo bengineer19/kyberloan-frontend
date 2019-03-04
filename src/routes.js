@@ -7,8 +7,8 @@ import Lend from './components/Lend.vue'
 export const routes = [
     {
         path: '',
-        name: 'loans',
-        component: Loans
+        name: 'home',
+        component: Borrow
     },
     {
         path: '/info',
