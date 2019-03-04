@@ -3,7 +3,7 @@
     <h1>Lending</h1>
 
     <!-- Loan collateral seizure modal -->
-    <b-modal id="withdrawModal" title="Withdraw collateral">
+    <b-modal id="withdrawModal" ref="withdrawModal" title="Withdraw collateral">
       <p>You are about to sieze the loan collateral.</p>
       <p>Which token would you like to liquidate the collateral in?</p>
 
@@ -144,6 +144,16 @@ function registerForLoan(contractAddr) {
   });
 }
 
+var tokenOptions = [{ value: null, text: 'Please select an option' }];
+for(var i = 0; i < config.liquidationTokens.length; i++){
+  var token = config.liquidationTokens[i]
+  console.log(token);
+  tokenOptions.push({
+    value: token.addr,
+    text: token.name
+  })
+}
+
 export default {
   name: 'Loans',
   data: function(){
@@ -152,11 +162,7 @@ export default {
       tabIndex: 0,
       activeModalLoanId: null,
       selectedToken: null,
-      tokenOptions: [
-        { value: null, text: 'Please select an option' },
-        { value: config.ETH_ADDRESS, text: 'ETH' },
-        { value: config.OMG_ADDRESS, text: 'OMG' },
-      ]
+      tokenOptions,
     }
   },
   computed : {
@@ -167,7 +173,6 @@ export default {
       return this.$store.getters.REGISTERED_LOANLIST;
     },
     unregisteredLoanList(){
-      console.log(this.$store.getters.UNREGISTERED_LOANLIST);
       return this.$store.getters.UNREGISTERED_LOANLIST;
     },
   },
@@ -202,8 +207,13 @@ export default {
     },
     onLoanSieze(evt) {
       console.log(this.selectedToken);
+      if(this.selectedToken == null){
+        return;
+      }
       var contractAddr = this.getLoanById(this.activeModalLoanId).contractAddr;
       siezeLoan(contractAddr, this.selectedToken);
+      this.$store.commit("REMOVE_LOAN", this.activeModalLoanId);
+      this.$refs.withdrawModal.hide();
     }
   },
 }
