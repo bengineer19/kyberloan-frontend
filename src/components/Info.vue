@@ -33,7 +33,7 @@
 
           <br>
           <br>
-          <b-button @click="resetState" variant="outline-warning">Reset demo</b-button>
+          <b-button @click="resetState" variant="outline-warning">Reset front-end demo</b-button>
         </b-container>
     </div>
 </template>
