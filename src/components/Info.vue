@@ -44,19 +44,13 @@ import config from "../config"
 
 var web3 = new Web3(new Web3.providers.HttpProvider(config.PROVIDER));
 
-var lenderTokens = config.liquidationTokens
-var borrowerTokens = config.liquidationTokens;
-for (var i = 0; i < config.liquidationTokens.length; i++) {
-  lenderTokens[i].balance = "Fetching balance ...", borrowerTokens[i].balance = "Fetching balance ...";
-}
-
 export default {
   name: 'Info',
   data: function(){
     return {
       error: null,
-      lenderTokens,
-      borrowerTokens,
+      lenderTokens: [],
+      borrowerTokens: [],
       borrowerAddress: config.DEMO_BORROWER_ADDRESS,
       borrowerETHBalance: "Fetching balance ...",
       lenderAddress: config.DEMO_LENDER_ADDRESS,
@@ -71,15 +65,6 @@ export default {
   },
 
   async beforeMount(){
-    for (var i = 0; i < this.lenderTokens.length; i++) {
-      var token = this.lenderTokens[i];
-      var tokenInstance = new web3.eth.Contract(token.abi, token.addr);
-      this.lenderTokens[i].balance = await tokenInstance.methods
-                                                .balanceOf(config.DEMO_LENDER_ADDRESS).call();
-      this.borrowerTokens[i].balance = await tokenInstance.methods
-                                                .balanceOf(config.DEMO_BORROWER_ADDRESS).call();
-    }
-    
     web3.eth.getBalance(config.DEMO_BORROWER_ADDRESS)
     .then(b => Web3.utils.fromWei(b, 'ether'))
     .then(b => this.borrowerETHBalance = b)
@@ -93,6 +78,16 @@ export default {
     .catch(err => {
       this.error = err.statusCode;
     });
+
+    for (var i = 0; i < config.liquidationTokens.length; i++) {
+      var token = config.liquidationTokens[i];
+      var tokenInstance = new web3.eth.Contract(token.abi, token.addr);
+
+      var lenderBalance = await tokenInstance.methods.balanceOf(config.DEMO_LENDER_ADDRESS).call();
+      this.lenderTokens.push({name: token.name, balance: lenderBalance});
+      var borrowerBalance = await tokenInstance.methods.balanceOf(config.DEMO_BORROWER_ADDRESS).call();
+      this.borrowerTokens.push({name: token.name, balance: borrowerBalance});
+    }
 
     return;
   }
