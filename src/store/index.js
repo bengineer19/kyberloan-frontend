@@ -35,10 +35,9 @@ export const store = new Vuex.Store({
     RESET_STATE (state) {
       Object.assign(state, initialState);
     },
-    SET_LOANLIST: (state, payload) => {
-      state.loanList = payload
-    },
-    ADD_LOAN: (state, loan) => {
+    ADD_LOAN: (state, _loan) => {
+      // Deep copy
+      let loan = JSON.parse(JSON.stringify(_loan));
       loan.id = state.currentLoanId;
       state.currentLoanId += 1;
       state.loanList.push(loan);
