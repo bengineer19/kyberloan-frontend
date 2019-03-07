@@ -153,7 +153,8 @@ export default {
         
         // Add to record of loans
         this.newLoan.contractAddr = newContractAddr;
-        this.$store.dispatch('SAVE_NEW_LOAN', this.newLoan);
+        // this.$store.dispatch('SAVE_NEW_LOAN', this.newLoan);
+        this.$store.commit('ADD_LOAN', this.newLoan);
         this.tabIndex++;
       })
     },
