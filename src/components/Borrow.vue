@@ -30,6 +30,8 @@
               </b-form-group>
 
               <b-button type="submit" variant="primary">Submit</b-button>
+              <br>
+              <p><small>Note: submitting will create a new smart contract</small></p>
             </b-form>
           </b-tab>
 
