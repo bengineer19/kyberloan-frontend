@@ -1,5 +1,6 @@
 import Loans from './components/Loans.vue'
 import Info from './components/Info.vue'
+import Home from './components/Home.vue'
 import Borrow from './components/Borrow.vue'
 import Lend from './components/Lend.vue'
 
@@ -8,7 +9,7 @@ export const routes = [
     {
         path: '',
         name: 'home',
-        component: Borrow
+        component: Home
     },
     {
         path: '/info',
