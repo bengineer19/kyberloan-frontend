@@ -67,14 +67,14 @@ export default {
   async beforeMount(){
     web3.eth.getBalance(config.DEMO_BORROWER_ADDRESS)
     .then(b => Web3.utils.fromWei(b, 'ether'))
-    .then(b => this.borrowerETHBalance = b)
+    .then(b => this.borrowerETHBalance = parseFloat(b).toFixed(2))
     .catch(err => {
       this.error = err.statusCode;
     });
 
     web3.eth.getBalance(config.DEMO_LENDER_ADDRESS)
     .then(b => Web3.utils.fromWei(b, 'ether'))
-    .then(b => this.lenderETHBalance = b)
+    .then(b => this.lenderETHBalance = parseFloat(b).toFixed(2))
     .catch(err => {
       this.error = err.statusCode;
     });
@@ -84,6 +84,8 @@ export default {
       var tokenInstance = new web3.eth.Contract(token.abi, token.addr);
 
       var lenderBalance = await tokenInstance.methods.balanceOf(config.DEMO_LENDER_ADDRESS).call();
+      var decimals = await tokenInstance.methods.decimals().call();
+      lenderBalance = (lenderBalance / 10**decimals).toFixed(2);
       this.lenderTokens.push({name: token.name, balance: lenderBalance});
       var borrowerBalance = await tokenInstance.methods.balanceOf(config.DEMO_BORROWER_ADDRESS).call();
       this.borrowerTokens.push({name: token.name, balance: borrowerBalance});
