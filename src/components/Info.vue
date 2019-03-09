@@ -88,6 +88,8 @@ export default {
       lenderBalance = (lenderBalance / 10**decimals).toFixed(2);
       this.lenderTokens.push({name: token.name, balance: lenderBalance});
       var borrowerBalance = await tokenInstance.methods.balanceOf(config.DEMO_BORROWER_ADDRESS).call();
+      decimals = await tokenInstance.methods.decimals().call();
+      borrowerBalance = (borrowerBalance / 10**decimals).toFixed(2);
       this.borrowerTokens.push({name: token.name, balance: borrowerBalance});
     }
 
